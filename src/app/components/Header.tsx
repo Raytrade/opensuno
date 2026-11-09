@@ -14,7 +14,7 @@ export default function Header() {
                     <Link className="rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3" href="/create">Studio</Link>
                     <Link className="rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3" href="/docs">API Docs</Link>
                     <Link className="rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3" href="/cookie">Connect</Link>
-                    <a href="https://github.com/paean-ai/opensuno/" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3">
+                    <a href="https://github.com/Raytrade/opensuno/" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3">
                         <Image src="/github-mark.png" alt="GitHub Logo" width={20} height={20} />
                         <span>GitHub</span>
                     </a>
