@@ -34,12 +34,14 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/app/**/*.ts",
+    "src/app/**/*.tsx",
     ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "extension"
+    "extension",
+    "src/bridge",
+    "src/mcp"
   ]
 }
