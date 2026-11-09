@@ -8,10 +8,11 @@
 
 import { build, type BuildOptions } from 'esbuild';
 import { cpSync, mkdirSync } from 'fs';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
 const isWatch = process.argv.includes('--watch');
-const extDir = resolve(import.meta.dir);
+const extDir = dirname(fileURLToPath(import.meta.url));
 const distDir = resolve(extDir, 'dist');
 
 // Ensure dist exists
@@ -59,22 +60,19 @@ if (isWatch) {
   // In watch mode, rebuild all entry points with esbuild's watch
   const contexts = await Promise.all(
     entryPoints.map((entry) =>
-      require('esbuild').context({
+      build({
         ...commonOptions,
         entryPoints: [entry.in],
         outfile: resolve(distDir, `${entry.out}.js`),
         format: entry.format || 'iife',
-      })
+        watch: true,
+      } as BuildOptions)
     )
   );
 
   // Initial build + copy static files
   await runBuild();
 
-  // Start watching
-  for (const ctx of contexts) {
-    await ctx.watch();
-  }
   console.log('Watching for changes...');
 } else {
   await runBuild();
