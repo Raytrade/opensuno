@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,10 +24,22 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "playwright-core": ["./node_modules/rebrowser-playwright-core"]
+      "@/*": [
+        "./src/*"
+      ],
+      "playwright-core": [
+        "./node_modules/rebrowser-playwright-core"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "extension"
+  ]
 }
