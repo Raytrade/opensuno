@@ -4,53 +4,21 @@ import Logo from "./Logo";
 
 export default function Header() {
     return (
-        <nav className=" flex w-full justify-center py-4 items-center 
-        border-b border-gray-300  backdrop-blur-2xl font-mono text-sm px-4 lg:px-0">
-            <div className="max-w-3xl flex w-full items-center justify-between">
-                <div className="font-medium text-xl text-indigo-900 flex items-center gap-2">
-                    <Logo className="w-4 h-4" />
-                    <Link href='/'>
-                        Suno API
-                    </Link>
+        <nav className="flex w-full justify-center border-b border-gray-300 px-4 py-4 font-mono text-sm backdrop-blur-2xl lg:px-0">
+            <div className="flex w-full max-w-4xl items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-xl font-medium text-indigo-900">
+                    <Logo className="h-4 w-4" />
+                    <Link href="/">OpenSuno</Link>
                 </div>
-                <div className="flex items-center justify-center gap-1 text-sm font-light text-indigo-900/90">
-                    <p className="p-2 lg:px-6 lg:py-3 rounded-full flex justify-center items-center
-                lg:hover:bg-indigo-300 duration-200
-                ">
-                        <Link href="/">
-                            Get Started
-                        </Link>
-                    </p>
-                    <p className="p-2 lg:px-6 lg:py-3 rounded-full flex justify-center items-center
-                lg:hover:bg-indigo-300 duration-200
-                ">
-                        <Link href="/docs">
-                            API Docs
-                        </Link>
-                    </p>
-                    <p className="p-2 lg:px-6 lg:py-3 rounded-full flex justify-center items-center
-                lg:hover:bg-indigo-300 duration-200
-                ">
-                        <Link href="/cookie">
-                            Cookie
-                        </Link>
-                    </p>
-                    <p className="p-2 lg:px-6 lg:py-3 rounded-full flex justify-center items-center
-                lg:hover:bg-indigo-300 duration-200
-                ">
-                        <a href="https://github.com/paean-ai/opensuno/"
-                            target="_blank"
-                            className="flex items-center justify-center gap-1">
-                            <span className="">
-                                <Image src="/github-mark.png" alt="GitHub Logo" width={20} height={20} />
-                            </span>
-                            <span>Github</span>
-                        </a>
-                    </p>
+                <div className="flex items-center justify-center gap-1 text-xs font-light text-indigo-900/90 sm:text-sm">
+                    <Link className="rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3" href="/create">Studio</Link>
+                    <Link className="rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3" href="/docs">API Docs</Link>
+                    <Link className="rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3" href="/cookie">Connect</Link>
+                    <a href="https://github.com/Raytrade/opensuno/" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1 rounded-full p-2 duration-200 hover:bg-indigo-100 lg:px-4 lg:py-3">
+                        <Image src="/github-mark.png" alt="GitHub Logo" width={20} height={20} />
+                        <span>GitHub</span>
+                    </a>
                 </div>
-
-
-
             </div>
         </nav>
     );
