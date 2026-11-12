@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 from datetime import datetime, timezone
 
@@ -50,6 +49,7 @@ async def process(job: MusicJob):
                 "lyrics": job.lyrics,
                 "model": job.model or ENGINE_MODEL,
                 "thinking": True,
+                "audio_duration": job.duration,
             })
             response.raise_for_status()
             data = _unwrap(response.json())
@@ -102,7 +102,7 @@ async def run():
                 db.commit()
                 db.refresh(job)
                 job_id = job.id
-                snapshot = MusicJob(id=job.id, user_id=job.user_id, status=job.status, caption=job.caption, lyrics=job.lyrics, model=job.model, engine_job_id=job.engine_job_id)
+                snapshot = MusicJob(id=job.id, user_id=job.user_id, status=job.status, caption=job.caption, lyrics=job.lyrics, model=job.model, duration=job.duration, engine_job_id=job.engine_job_id)
             else:
                 job_id = None
                 snapshot = None
