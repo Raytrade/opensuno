@@ -1,6 +1,6 @@
 {
   "name": "opensuno",
-  "description": "Open-source Suno AI API with Chrome Extension bridge for zero-config auth and automatic captcha bypass.",
+  "description": "Personal music workspace for preparing song prompts, lyrics, and local drafts before continuing in an official Suno account.",
   "author": {
     "name": "Paean AI",
     "url": "https://github.com/paean-ai/"
@@ -47,7 +47,6 @@
     "react": "^18",
     "react-dom": "^18",
     "react-markdown": "^9.0.1",
-    "rebrowser-playwright-core": "^1.49.1",
     "swagger-ui-react": "^5.18.2",
     "tough-cookie": "^4.1.4",
     "user-agents": "^1.1.156",
