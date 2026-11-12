@@ -58,6 +58,7 @@ class MusicJob(Base):
     caption: Mapped[str] = mapped_column(Text)
     lyrics: Mapped[str] = mapped_column(Text, default="")
     model: Mapped[str] = mapped_column(String(80))
+    duration: Mapped[int] = mapped_column(Integer, default=120)
     engine_job_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
     audio_path: Mapped[str | None] = mapped_column(Text, nullable=True)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -206,7 +207,7 @@ def generate(body: GenerateInput, user: User = Depends(authenticated_user), db: 
         raise HTTPException(status_code=402, detail="No credits remaining")
     if body.model not in {"acestep-v15-turbo", "acestep-v15-base", "acestep-v15-sft"}:
         raise HTTPException(status_code=422, detail="Unsupported native model. Choose an installed ACE-Step model.")
-    job = MusicJob(id=str(secrets.token_urlsafe(24)), user_id=user.id, caption=body.caption, lyrics=body.lyrics, model=body.model, status="queued")
+    job = MusicJob(id=str(secrets.token_urlsafe(24)), user_id=user.id, caption=body.caption, lyrics=body.lyrics, model=body.model, duration=body.duration, status="queued")
     user.credits -= 1
     db.add(job)
     db.commit()
