@@ -1,62 +1,42 @@
-import React from 'react';
-import Swagger from '../components/Swagger';
-import spec from './swagger-suno-api.json'; // 直接导入JSON文件
-import Section from '../components/Section';
-import Markdown from 'react-markdown';
-
+import Link from "next/link";
+import Section from "../components/Section";
 
 export default function Docs() {
-    return (
-        <>
-            <Section className="my-10">
-                <article className="prose lg:prose-lg max-w-3xl pt-10">
-                    <h1 className=' text-center text-indigo-900'>
-                        API Docs
-                    </h1>
-                    <Markdown>
-                        {`                     
----
-\`OpenSuno\` currently implements the following APIs:
-
-\`\`\`bash
-- \`/api/generate\`: Generate music
-- \`/v1/chat/completions\`: Generate music - Call the generate API in a format 
-  that works with OpenAI’s API.
-- \`/api/custom_generate\`: Generate music (Custom Mode, support setting lyrics, 
-  music style, title, etc.)
-- \`/api/generate_lyrics\`: Generate lyrics based on prompt
-- \`/api/get\`: Get music information based on the id. Use “,” to separate multiple 
-    ids.  If no IDs are provided, all music will be returned.
-- \`/api/get_limit\`: Get quota Info
-- \`/api/extend_audio\`: Extend audio length
-- \`/api/generate_stems\`: Make stem tracks (separate audio and music track)
-- \`/api/get_aligned_lyrics\`: Get list of timestamps for each word in the lyrics
-- \`/api/clip\`:  Get clip information based on ID passed as query parameter \`id\`
-- \`/api/concat\`: Generate the whole song from extensions
-- \`/api/persona\`: Get persona information and clips based on ID and page number
-\`\`\`
-
-Feel free to explore the detailed API parameters and conduct tests on this page.
-                        `}
-                    </Markdown>
-                </article>
-            </Section>
-            <Section className="my-10">
-                <article className='prose lg:prose-lg max-w-3xl py-10'>
-                    <h2 className='text-center'>
-                        Details of the API and testing it online
-                    </h2>
-                    <p className='text-red-800 italic'>
-                        This is just a demo, bound to a test account. Please do not use it frequently, so that more people can test online.
-                    </p>
-                </article>
-
-                <div className=' border p-4 rounded-2xl shadow-xl hover:shadow-none duration-200'>
-                    <Swagger spec={spec} />
-                </div>
-
-            </Section>
-        </>
-
-    );
+  return (
+    <Section className="my-10">
+      <article className="prose max-w-3xl lg:prose-lg">
+        <h1 className="text-center text-indigo-900">OpenSuno Workspace Guide</h1>
+        <p>
+          OpenSuno is currently a personal songwriting workspace. It helps you prepare
+          music descriptions, original lyrics, and prompts, then continue in your own
+          official Suno account.
+        </p>
+        <h2>What this website currently supports</h2>
+        <ul>
+          <li>Preparing and editing music prompts.</li>
+          <li>Adding style tags and original lyrics.</li>
+          <li>Copying a combined prompt for use in Suno.</li>
+          <li>Saving and reopening drafts in the current browser on this device.</li>
+        </ul>
+        <h2>Music generation</h2>
+        <p>
+          Generation, voice selection, credits, and account management take place on
+          Suno. This website does not provide unsupported private API access or claim
+          to generate tracks itself.
+        </p>
+        <p>
+          <Link href="/studio">Open My Studio</Link>{" "}
+          or{" "}
+          <a href="https://suno.com/create" target="_blank" rel="noopener noreferrer">
+            continue to official Suno Create
+          </a>.
+        </p>
+        <h2>Account security</h2>
+        <p>
+          Sign in only on the official Suno website. Never share your password,
+          browser cookie, JWT, or session token with this workspace.
+        </p>
+      </article>
+    </Section>
+  );
 }
