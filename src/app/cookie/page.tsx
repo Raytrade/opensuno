@@ -31,7 +31,7 @@ export default function ConnectPage() {
           </a>
           <p className="mt-5 text-xs leading-5 text-amber-700">
             Never paste a Suno password, cookie, or session token into this app, GitHub, Vercel
-            source files, or a chat. Use Suno's own account and security settings.
+            source files, or a chat. Use Suno&apos;s own account and security settings.
           </p>
         </div>
       </Section>
