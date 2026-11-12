@@ -192,6 +192,12 @@ export default function CreatePage() {
               <p className="mt-2 text-sm leading-6 text-slate-500">Create with a short idea, or switch to Custom lyrics to control the title, lyrics and style.</p>
               <a href="/cookie" className="mt-4 inline-flex text-sm font-semibold text-indigo-700 hover:text-indigo-900">Manage Suno connection →</a>
             </div>
+            <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-5">
+              <h2 className="font-semibold text-slate-900">Add Voice</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Open your Suno voice library to add or choose your saved voice profile. Your WHITYRAY profile is available there as Vwhity.</p>
+              <a href="https://suno.com/voice/3d0ecb16-01fe-45e8-b8d5-7034308b2c85" target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-lg bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-800">Open Vwhity voice profile ↗</a>
+              <p className="mt-3 text-xs leading-5 text-slate-500">Compatibility note: this preserved legacy OpenSuno generation endpoint currently sends no voice/persona selection. Choosing a profile here would not reliably apply it to generated tracks, so voice attachment remains in Suno until a supported legacy API field is confirmed.</p>
+            </div>
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
               <h2 className="font-semibold text-slate-900">API access</h2>
               <p className="mt-2 text-sm leading-6 text-slate-500">The same backend is available to your own apps and AI tools.</p>
