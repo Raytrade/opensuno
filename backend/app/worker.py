@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import httpx
 from sqlalchemy import select
 
-from .main import ENGINE_KEY, ENGINE_MODEL, ENGINE_URL, MusicJob, SessionLocal
+from .main import ENGINE_KEY, ENGINE_MODEL, ENGINE_URL, FOUNDER_EMAIL, MusicJob, SessionLocal
 
 POLL_SECONDS = float(os.getenv("ACESTEP_POLL_SECONDS", "5"))
 IDLE_SECONDS = 2
@@ -144,7 +144,7 @@ async def run():
                     # A job is refunded only in the transition to failed.
                     from .main import User
                     owner = db.get(User, current.user_id)
-                    if owner:
+                    if owner and owner.email.strip().lower() != FOUNDER_EMAIL:
                         owner.credits += 1
                     db.commit()
 
