@@ -29,6 +29,7 @@ STARTER_CREDITS = int(os.getenv("STARTER_CREDITS", "20"))
 ENGINE_URL = os.getenv("ACESTEP_BASE_URL", "").rstrip("/")
 ENGINE_KEY = os.getenv("ACESTEP_API_KEY", "")
 ENGINE_MODEL = os.getenv("ACESTEP_MODEL", "acestep-v15-turbo")
+FOUNDER_EMAIL = os.getenv("FOUNDER_EMAIL", "").strip().lower()
 POLL_SECONDS = float(os.getenv("ACESTEP_POLL_SECONDS", "5"))
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
@@ -78,6 +79,11 @@ def db_session() -> Generator[Session, None, None]:
 
 def _b64(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+
+def _is_founder(user: User) -> bool:
+    """Founder status is granted only to the email explicitly configured by the operator."""
+    return bool(FOUNDER_EMAIL) and user.email.strip().lower() == FOUNDER_EMAIL
 
 
 def _password_hash(password: str, salt: bytes | None = None) -> str:
@@ -218,7 +224,7 @@ def register(body: RegisterInput, db: Session = Depends(db_session)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    return {"access_token": _token(user.id), "token_type": "bearer", "user": {"id": user.id, "email": user.email, "credits": user.credits}}
+    return {"access_token": _token(user.id), "token_type": "bearer", "user": {"id": user.id, "email": user.email, "credits": user.credits, "is_founder": _is_founder(user), "plan": "founder_free" if _is_founder(user) else "free"}}
 
 
 @app.post("/v1/auth/login")
@@ -231,22 +237,23 @@ def login(body: LoginInput, db: Session = Depends(db_session)):
 
 @app.get("/v1/me")
 def me(user: User = Depends(authenticated_user)):
-    return {"id": user.id, "email": user.email, "credits": user.credits}
+    return {"id": user.id, "email": user.email, "credits": user.credits, "is_founder": _is_founder(user), "plan": "founder_free" if _is_founder(user) else "free"}
 
 
 @app.post("/v1/music/generate", status_code=202)
 def generate(body: GenerateInput, user: User = Depends(authenticated_user), db: Session = Depends(db_session)):
     if not ENGINE_URL:
         raise HTTPException(status_code=503, detail="Music inference engine is not configured. Set ACESTEP_BASE_URL to your own ACE-Step server.")
-    if user.credits < 1:
+    if not _is_founder(user) and user.credits < 1:
         raise HTTPException(status_code=402, detail="No credits remaining")
     if body.model not in {"acestep-v15-turbo", "acestep-v15-base", "acestep-v15-sft"}:
         raise HTTPException(status_code=422, detail="Unsupported native model. Choose an installed ACE-Step model.")
     job = MusicJob(id=str(secrets.token_urlsafe(24)), user_id=user.id, caption=body.caption, lyrics=body.lyrics, model=body.model, duration=body.duration, status="queued")
-    user.credits -= 1
+    if not _is_founder(user):
+        user.credits -= 1
     db.add(job)
     db.commit()
-    return {"job_id": job.id, "status": job.status, "credits_remaining": user.credits}
+    return {"job_id": job.id, "status": job.status, "credits_remaining": user.credits, "unlimited": _is_founder(user)}
 
 
 @app.get("/v1/music/jobs/{job_id}")
@@ -293,7 +300,12 @@ async def get_audio(job_id: str, user: User = Depends(authenticated_user), db: S
 
 @app.get("/v1/credits")
 def credits(user: User = Depends(authenticated_user)):
-    return {"credits": user.credits}
+    return {"credits": user.credits, "unlimited": _is_founder(user), "plan": "founder_free" if _is_founder(user) else "free"}
+
+
+@app.get("/v1/founder/status")
+def founder_status(user: User = Depends(authenticated_user)):
+    return {"is_founder": _is_founder(user), "plan": "founder_free" if _is_founder(user) else "free", "credits": user.credits, "unlimited": _is_founder(user)}
 
 
 @app.get("/v1/admin/engine")
