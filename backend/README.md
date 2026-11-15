@@ -16,8 +16,8 @@ An independent music-generation application backend for OpenSuno. It does not ca
 2. Set the same strong database password in both `POSTGRES_PASSWORD` and the password portion of `DATABASE_URL`.
 3. Set a unique `JWT_SECRET` with at least 32 characters.
 4. Set `FOUNDER_EMAIL` to the exact email address you will use to register/login as the founder. Do not leave the example address in place.
-4. Set `ACESTEP_BASE_URL` to the network address of your ACE-Step 1.5 server. The default `host.docker.internal` is only suitable when the inference server is reachable from Docker on that host.
-5. Start the API and worker:
+5. Set `ACESTEP_BASE_URL` to the network address of your ACE-Step 1.5 server. The default `host.docker.internal` is only suitable when the inference server is reachable from Docker on that host.
+6. Start the API and worker:
 
 ```bash
 docker compose up --build
