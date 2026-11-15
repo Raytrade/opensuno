@@ -173,6 +173,42 @@ def health():
         raise HTTPException(status_code=503, detail="Database unavailable")
 
 
+@app.get("/v1/engine/health")
+async def native_engine_health(user: User = Depends(authenticated_user)):
+    """Verify the configured ACE-Step server and report its available model IDs."""
+    if not ENGINE_URL:
+        return {"configured": False, "reachable": False, "provider": "ACE-Step", "models": []}
+    headers = {"Authorization": f"Bearer {ENGINE_KEY}"} if ENGINE_KEY else {}
+    try:
+        async with httpx.AsyncClient(base_url=ENGINE_URL, headers=headers, timeout=8) as client:
+            health_response = await client.get("/health")
+            health_response.raise_for_status()
+            models_response = await client.get("/v1/models")
+            models_response.raise_for_status()
+            health_data = health_response.json()
+            models_data = models_response.json()
+        health_payload = health_data.get("data", health_data) if isinstance(health_data, dict) else {}
+        models_payload = models_data.get("data", models_data) if isinstance(models_data, dict) else models_data
+        if isinstance(models_payload, dict):
+            models_payload = models_payload.get("models", [])
+        model_ids = []
+        if isinstance(models_payload, list):
+            for item in models_payload:
+                if isinstance(item, str):
+                    model_ids.append(item)
+                elif isinstance(item, dict) and isinstance(item.get("id") or item.get("name"), str):
+                    model_ids.append(item.get("id") or item.get("name"))
+        return {
+            "configured": True,
+            "reachable": True,
+            "provider": "ACE-Step",
+            "health": health_payload.get("status", "ok") if isinstance(health_payload, dict) else "ok",
+            "models": model_ids,
+        }
+    except (httpx.HTTPError, ValueError):
+        return {"configured": True, "reachable": False, "provider": "ACE-Step", "models": []}
+
+
 @app.post("/v1/auth/register", status_code=201)
 def register(body: RegisterInput, db: Session = Depends(db_session)):
     email = str(body.email).lower().strip()
