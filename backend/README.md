@@ -46,8 +46,13 @@ The official API reference is linked in the project documentation and upstream A
 - `GET /v1/music/jobs/{job_id}` — owner-only job status
 - `GET /v1/music/jobs/{job_id}/audio` — owner-only audio proxy after completion
 - `GET /health` — database and inference configuration health
+- `GET /v1/engine/health` — authenticated live ACE-Step health and installed model check
 
 Protected endpoints require `Authorization: Bearer <access_token>`.
+
+## Run the automated tests
+
+From this directory, install the requirements and run `pytest -q`. A GitHub Actions workflow also runs the backend test suite for changes to this backend.
 
 ## Validation status and production boundary
 
