@@ -8,7 +8,6 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Generator
-from urllib.parse import quote
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -229,10 +228,11 @@ async def get_audio(job_id: str, user: User = Depends(authenticated_user), db: S
         raise HTTPException(status_code=404, detail="Job not found")
     if job.status != "succeeded" or not job.audio_path:
         raise HTTPException(status_code=409, detail="Audio is not ready")
-    if not ENGINE_URL or not job.audio_path.startswith("/"):
+    if not ENGINE_URL or not job.audio_path.startswith("/v1/audio?path="):
         raise HTTPException(status_code=502, detail="Audio reference is invalid")
     headers = {"Authorization": f"Bearer {ENGINE_KEY}"} if ENGINE_KEY else {}
-    url = f"{ENGINE_URL}/v1/audio?path={quote(job.audio_path, safe='')}"
+    # ACE-Step returns a ready-to-use /v1/audio?path=... reference.
+    url = f"{ENGINE_URL}{job.audio_path}"
     client = httpx.AsyncClient(timeout=120)
     try:
         response = await client.send(client.build_request("GET", url, headers=headers), stream=True)
