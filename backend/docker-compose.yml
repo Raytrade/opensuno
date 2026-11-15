@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: opensuno
       POSTGRES_USER: opensuno
-      POSTGRES_PASSWORD: change-me
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in backend/.env}
     volumes:
       - opensuno_pg:/var/lib/postgresql/data
     healthcheck:
