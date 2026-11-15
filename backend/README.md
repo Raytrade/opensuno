@@ -1,43 +1,58 @@
 # OpenSuno Native Backend
 
-This is an independent account and music-generation backend for the OpenSuno project. It does **not** call Suno's private API, require a Suno login, or use a user's Suno cookies. It uses the open ACE-Step inference server as the first replaceable generation engine.
+An independent music-generation application backend for OpenSuno. It does not call Suno's private API, use Suno cookies, or require a Suno account.
 
-## Architecture
+## Current architecture
 
-- FastAPI: registration, login, JWT sessions, credits, job API and private audio proxy.
-- PostgreSQL: durable users, credit balances and generation jobs.
-- Worker: claims queued jobs, submits them to ACE-Step, polls completion and refunds credits on failures.
-- ACE-Step: self-hosted open-weight music inference service. Run it on a GPU host; the web/API service can run separately.
+- FastAPI: registration, login, JWT sessions, credits, generation jobs and audio proxy.
+- PostgreSQL: accounts, credit balances and job state.
+- Worker: claims queued jobs and talks to the official ACE-Step 1.5 asynchronous task API.
+- ACE-Step 1.5: separate self-hosted model inference service. It needs a suitable GPU host; the Android phone is for controlling the studio, not running the full model.
 
-## Start the account/job backend
+## Start the application backend
+
+1. Copy `.env.example` to `.env`.
+2. Set the same strong database password in both `POSTGRES_PASSWORD` and the password portion of `DATABASE_URL`.
+3. Set a unique `JWT_SECRET` with at least 32 characters.
+4. Set `ACESTEP_BASE_URL` to the network address of your ACE-Step 1.5 server. The default `host.docker.internal` is only suitable when the inference server is reachable from Docker on that host.
+5. Start the API and worker:
 
 ```bash
-cd backend
-cp .env.example .env
-# Change POSTGRES_PASSWORD and JWT_SECRET in .env before exposing this service.
 docker compose up --build
 ```
 
 API docs: http://localhost:8080/docs  
 Health: http://localhost:8080/health
 
-Set `ACESTEP_BASE_URL` to the URL of your separately running ACE-Step API (normally port 8001). Set `ACESTEP_API_KEY` if that server has API-key authentication enabled. The worker supports the current `/v1/music/generate` + `/v1/jobs/{job_id}` interface and the older `/release_task` / `/query_result` task interface where available.
+## ACE-Step integration contract
+
+The worker follows ACE-Step 1.5's documented native task API:
+
+1. `POST /release_task` with `prompt`, `lyrics`, `model`, `thinking` and `audio_duration`.
+2. Poll `POST /query_result` with `{"task_id_list":["..."]}`.
+3. Treat status `0` as queued/running, `1` as succeeded and `2` as failed.
+4. Parse the JSON-encoded `result` field and retain the returned `/v1/audio?path=...` reference.
+5. Proxy that exact ACE-Step audio route to the authenticated owner.
+
+The official API reference is linked in the project documentation and upstream ACE-Step 1.5 repository. Model identifiers must match models actually installed on the inference host.
 
 ## API
 
-- `POST /v1/auth/register` — { email, password } (password minimum 10 characters)
+- `POST /v1/auth/register` — { email, password }
 - `POST /v1/auth/login` — { email, password }
 - `GET /v1/me` — current account and credits
 - `GET /v1/credits` — current balance
-- `POST /v1/music/generate` — { caption, lyrics?, model?, duration?, thinking? }; reserves one credit
-- `GET /v1/music/jobs/{job_id}` — status, only visible to the owner
-- `GET /v1/music/jobs/{job_id}/audio` — authenticated audio proxy after completion
+- `POST /v1/music/generate` — { caption, lyrics?, model?, duration?, thinking? }
+- `GET /v1/music/jobs/{job_id}` — owner-only job status
+- `GET /v1/music/jobs/{job_id}/audio` — owner-only audio proxy after completion
 - `GET /health` — database and inference configuration health
 
-All protected endpoints require `Authorization: Bearer <access_token>`.
+Protected endpoints require `Authorization: Bearer <access_token>`.
 
-## Important production boundary
+## Validation status and production boundary
 
-This repository contains the application backend and orchestration source. It does not magically include trained music model weights or GPU compute. A real generation requires deploying ACE-Step (or another licensed inference engine) on suitable hardware and setting `ACESTEP_BASE_URL`. ACE-Step documents its own asynchronous task API and GPU/model setup in its upstream project. The default model name is configurable; only model IDs installed on your inference host will work.
+The worker has been aligned to the documented ACE-Step 1.5 task endpoints and audio-reference format. Unit tests have been added for parsing the result payload, but **tests have not yet been executed** and no live GPU inference server has been connected. This is source-code progress, not proof of end-to-end generation.
 
-Before public launch, also configure HTTPS, a strong unique JWT secret, database backups, email verification/password recovery, abuse controls, monitoring, and a payment provider. The starter credits are development defaults, not a billing implementation.
+Before a public launch, we still need automated test execution, integration testing against a running ACE-Step server, migrations, safer worker recovery and credit accounting, request throttling, email verification/password recovery, monitoring, backups, HTTPS, content/abuse controls and a real billing ledger. Starter credits are development defaults, not a payment system.
+
+ACE-Step is an independent open model engine; its weights and compute are not included in this repository. Review the upstream code and model-weight licences before commercial deployment.
